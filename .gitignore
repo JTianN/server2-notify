@@ -1,0 +1,5 @@
+# Ignore .env files (ข้อมูลลับ)
+.env
+
+# Ignore log files
+noti-kifarm-firebase-adminsdk-fbsvc-7b86fd53bc.json
