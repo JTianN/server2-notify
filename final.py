@@ -235,7 +235,7 @@ async def monitor_data():
                 else:
                     print(f"ไม่พบ DateTime ในชื่อเอกสาร: {doc_id}")
 
-        await asyncio.sleep(10)  # รอ 10 วินาทีก่อนตรวจสอบใหม่
+        await asyncio.sleep(3600)  # รอ 10 วินาทีก่อนตรวจสอบใหม่
 
 
 
