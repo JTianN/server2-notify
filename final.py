@@ -66,61 +66,6 @@ async def send_alert_email(data: tuple, recipient: str):
         print("No alert needed. Device status is fine.")
 
 
-
-# def read_latest_doc_from_all_collections():
-#     collections = ['kifarmTelemetryDataGH', 'kifarmTelemetryDataFZ']  # รายการของ collection ที่ต้องการดึงข้อมูล
-#     doc_timestamps = []
-
-#     for collection_name in collections:
-#         print(f"Checking collection: {collection_name}")
-#         collection_ref = db.collection(collection_name)
-#         docs = collection_ref.stream()
-
-#         for doc in docs:
-#             doc_id = doc.id
-#             print(f"Found doc_id: {doc_id}")  # พิมพ์ doc_id เพื่อดูว่าเอกสารใน collection มีอะไรบ้าง
-#             try:
-#                 # แยก device name และ timestamp จาก doc_id
-#                 device_name, timestamp_str = doc_id.split('_')
-#                 doc_timestamp = datetime.strptime(timestamp_str, "%Y-%m-%dT%H:%M:%S.%f")
-#                 doc_timestamp = doc_timestamp.replace(tzinfo=timezone.utc)
-#                 doc_timestamps.append((doc, doc_timestamp, device_name, collection_name))
-#             except Exception as e:
-#                 print(f"Error parsing timestamp from docId {doc_id}: {e}")
-
-#     if doc_timestamps:
-#         latest_doc, _, device_name, collection_name = max(doc_timestamps, key=lambda x: x[1])
-#         return latest_doc, device_name, collection_name
-#     else:
-#         return None, None, None
- 
-    
-# async def monitor_data():
-#     while True:
-#         print("\nChecking the latest document...")
-#         latest_doc, device_name, collection_name = read_latest_doc_from_all_collections()
-
-#         if latest_doc:
-#             doc_id = latest_doc.id  # ดึงชื่อเอกสาร
-#             match = re.search(r"_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+)", doc_id)  # กรองหาชื่อวันที่
-
-#             if match:
-#                 Time_str = match.group(1)
-#                 telemetryTime = datetime.fromisoformat(Time_str)
-#                 status_result = check_status(telemetryTime)
-#                 # แสดงชื่ออุปกรณ์และชื่อ collection
-#                 print(f"Device name : {device_name}")
-#                 print(f"Collection name : {collection_name}")
-#                 await send_alert_email(status_result, "iotfarm.krda@gmail.com")
-#                 print(telemetryTime)
-#             else:
-#                 print("ไม่พบ DateTime ในชื่อเอกสาร")
-#         else:
-#             print("ไม่พบเอกสารในทั้งสอง collection")
-
-#         await asyncio.sleep(10)
-
-
 def read_latest_doc_from_all_collections():
     collections = ['kifarmTelemetryDataGH', 'kifarmTelemetryDataFZ']  # รายการของ collection ที่ต้องการดึงข้อมูล
     latest_docs = {}  # เก็บข้อมูลล่าสุดของแต่ละ collection
@@ -154,47 +99,6 @@ def read_latest_doc_from_all_collections():
 
 # กำหนด timezone ของประเทศไทย
 THAILAND_TZ = timezone(timedelta(hours=7))
-
-# async def monitor_data():
-#     while True:
-#         print("\nChecking the latest documents...")
-#         latest_docs = read_latest_doc_from_all_collections()  # ดึงข้อมูลล่าสุดจากแต่ละ collection
-#         current_time = datetime.now(timezone.utc)  # เวลาปัจจุบันใน UTC
-        
-#         if not latest_docs:
-#             print("ไม่พบเอกสารในทั้งสอง collection")
-#         else:
-#             for collection_name, (latest_doc, device_name) in latest_docs.items():
-#                 doc_id = latest_doc.id  # ดึงชื่อเอกสาร
-#                 match = re.search(r"_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+)", doc_id)  # กรองหาวันที่
-
-#                 if match:
-#                     time_str = match.group(1)
-#                     telemetry_time = datetime.fromisoformat(time_str).replace(tzinfo=timezone.utc)
-
-#                     # แปลงเป็นเวลาท้องถิ่น (ประเทศไทย)
-#                     telemetry_time_local = telemetry_time.astimezone(timezone.utc)  # ปรับตามโซนเวลาได้
-#                     current_time_local = current_time.astimezone(timezone.utc)  # ปรับตามโซนเวลาได้
-
-#                     status_result = check_status(telemetry_time)
-
-#                     # แสดงข้อมูลของแต่ละ collection
-#                     print(f"\nCollection: {collection_name}")
-#                     print(f"Device Name: {device_name}")
-#                     print(f"Latest Document ID: {doc_id}")
-#                     #print(f"Device Time (Thailand Local Time): {telemetry_time_local}")
-#                     #print(f"Current Time (Thailand Local Time): {current_time_local}")
-#                     print(f"Status: {status_result}")
-
-#                     # ส่งอีเมลแจ้งเตือนหากสถานะเป็น Offline หรืออื่น ๆ ตามเงื่อนไข
-#                     if status_result == "Offline":
-#                         #await send_alert_email(status_result, "iotfarm.krda@gmail.com")
-#                         print("Email sent successfully!")
-
-#                 else:
-#                     print(f"ไม่พบ DateTime ในชื่อเอกสาร: {doc_id}")
-
-#         await asyncio.sleep(10)  # รอ 10 วินาทีก่อนตรวจสอบใหม่
 
 async def monitor_data():
     while True:
@@ -238,46 +142,6 @@ async def monitor_data():
         await asyncio.sleep(3600)  # รอ 10 วินาทีก่อนตรวจสอบใหม่
 
 
-
-
-# def check_status(timestamp: datetime):
-#     try:
-#         if not timestamp:
-#             raise ValueError("Timestamp is required")
-
-#         # กำหนดโซนเวลาเป็นประเทศไทย
-#         thailand_tz = pytz.timezone('Asia/Bangkok')
-
-#         # ถ้า timestamp ไม่มีข้อมูลโซนเวลา, สมมติว่าเป็นเวลาไทยแล้วแปลงเป็น timezone
-#         if timestamp.tzinfo is None:
-#             dt_input = thailand_tz.localize(timestamp)
-#         else:
-#             # ถ้ามีข้อมูลโซนเวลาอยู่แล้ว ให้แปลงเป็นเวลาในประเทศไทย
-#             dt_input = timestamp.astimezone(thailand_tz)
-
-#         # เวลาปัจจุบันในประเทศไทย
-#         now = datetime.now(thailand_tz)
-
-#         # แสดงผลเวลาในประเทศไทย
-#         timenow = now.strftime('%Y-%m-%d %H:%M:%S')
-#         timedevice = dt_input.strftime('%Y-%m-%d %H:%M:%S')
-#         print("Current Time (Thailand Local Time):", timenow)
-#         print("Device Time (Thailand Local Time):", timedevice)
-
-#         if now - dt_input <= timedelta(minutes=20):      #สามารถ setting parameter   (seconds,minutes)
-#             print("Status: Online")
-#             return ('Device is Online', timenow, timedevice, True)
-#         elif dt_input < now:
-#             print("Status: Offline")
-#             return ('Device is Offline', timenow, timedevice, False)
-#         else:
-#             print("Status: Online")
-#             return ('Device is Online', timenow, timedevice, True)
-
-#     except Exception as e:
-#         print(f"Error: {e}")
-#         return ('Invalid timestamp format', None, None, False)
-
 from datetime import datetime, timedelta
 import pytz
 
@@ -318,9 +182,6 @@ def check_status(timestamp: datetime):
     except Exception as e:
         print(f"Error: {e}")
         return ('Invalid timestamp format', None, None, False)
-
-
-
 
 
 # API endpoint to check device status
